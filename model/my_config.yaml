@@ -1,0 +1,37 @@
+_BASE_: "faster_rcnn_R_50_FPN_3x.yaml"
+DATASETS:
+  TRAIN: ("train",)
+  TEST: ("val",)
+MODEL:
+  RETINANET:
+    NUM_CLASSES: 12  # 类别数+1, 因为有background
+  # WEIGHTS: "../tools/output/model_final.pth"
+  # rotational boxes
+  RPN:
+    HEAD_NAME: "StandardRPNHead"
+    BBOX_REG_WEIGHTS: (10,10,5,5,1)
+  ANCHOR_GENERATOR:
+    NAME: "RotatedAnchorGenerator"
+    ANGLES: [ [ -60,-30,0,30,60,90 ] ]
+  ROI_HEADS:
+    NAME: "RROIHeads"
+    BATCH_SIZE_PER_IMAGE: 256   # faster, and good enough for this toy dataset (default: 512)
+    NUM_CLASSES: 12               # attention plz!!!!!!!!!
+    SCORE_THRESH_TEST: 0.5  # set threshold for this model
+  PROPOSAL_GENERATOR:
+    NAME: "RRPN"
+  ROI_BOX_HEAD:
+    POOLER_TYPE: "ROIAlignRotated"
+    BBOX_REG_WEIGHTS: (10.0, 10.0, 5.0, 5.0, 1.0)
+
+SOLVER:
+  # IMS_PER_BATCH: 16
+  # 初始学习率
+  BASE_LR: 0.0025
+  # 迭代到指定次数，学习率进行衰减
+  # STEPS: (210000, 250000)
+  MAX_ITER: 1500
+  CHECKPOINT_PERIOD: 1000
+
+
+
