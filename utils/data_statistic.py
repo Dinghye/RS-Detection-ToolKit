@@ -24,7 +24,7 @@ Perform 6 statistics of target detection data
 4. bibliographic statistics of different categories of targets
 5. distribution of aspect ratios within a single category
 6. area distribution within a single category
-7. 旋转角度统计(info type only)
+(NEW)7. 旋转角度统计(info type only)
 """
 
 

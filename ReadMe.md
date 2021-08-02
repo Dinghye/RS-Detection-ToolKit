@@ -106,3 +106,6 @@ eval.sh
 2021/8/2 dinghye: 
 coco转换时会出现height和width不精准的情况，提交coco_editor.py patch 修改矫正；添加cascade模型(model/cascade)；添加旋转框角度统计(data_statistic.py)；
 重要修改: eval-only 旋转框验证完善（RotatedCOCOEvalutate）
+
+# 感谢&相关工作
+* https://github.com/CAPTAIN-WHU/DOTA_devkit
