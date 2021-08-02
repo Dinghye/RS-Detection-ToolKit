@@ -4,10 +4,15 @@ import numpy as np
 import math
 import cv2
 import shapely.geometry as shgeo
-import utils.data_utils as util
+import data_utils as util
 import copy
 
-from data.json_API import get_file_info
+import sys
+sys.path.append("..")
+
+# from data.json_API import get_file_info
+# from data.json_API import get_file_info
+import data.json_API
 
 """
 This function is aim to split the data (origin from DOTA_devkit)
@@ -95,8 +100,8 @@ class splitbase():
         # def __del__(self):
         #     self.f_sub.close()
         ## grid --> (x, y) position of grids
-
-        self.info_group = get_file_info(self.basepath)  # save dataset info
+        js = data.json_API.JSON(self.basepath)
+        self.info_group = js.get_file_info(self.basepath) # get_file_info(self.basepath)  # save dataset info
 
     def polyorig2sub(self, left, up, poly):
         polyInsub = np.zeros(len(poly))

@@ -30,7 +30,7 @@ class DATA_INFO():
         # 按照键值划分数据
         total_keys = range(1, len(self.data_set) + 1)
         # print(total_keys)
-        train_keys, val_keys = train_test_split(total_keys, test_size=0.2)
+        train_keys, val_keys = train_test_split(total_keys, test_size=0.1)
         print("train_n:", len(train_keys), 'val_n:', len(val_keys))
 
         # 把训练集转化为COCO的json格式

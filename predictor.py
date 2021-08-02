@@ -5,12 +5,12 @@ from detectron2.engine import DefaultPredictor
 from detectron2.config import get_cfg
 from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
-
+import os
 from data.rotated_visualization import myVisualization
 
 # TEST_PATH = "/home/dinghye/下载/科目四初赛第一阶段/test1/"
 # CLASS_LIST = {'__background__', 1, 2, 3, 4, 5}
-TEST_PATH = "../dataset/trainMyDataset"
+TEST_PATH = "../dataset/trainMyDataset/images/val"
 CLASS_LIST= ['__background__','0','1','2', '3', '4', '5', '6', '7', '8', '9', '10']
 
 if __name__ == "__main__":
@@ -25,13 +25,15 @@ if __name__ == "__main__":
     predictor = DefaultPredictor(cfg)
     MetadataCatalog.get("train").set(things_class=CLASS_LIST)
 
-    for d in random.sample(range(1, 261), 20):
-        im = cv2.imread(TEST_PATH + str(d) + ".tif")
+    for d in random.sample(os.listdir(TEST_PATH), 20):
+        # im = cv2.imread(TEST_PATH + str(d) + ".png")
+        im = cv2.imread(os.path.join(TEST_PATH,d))
 
         outputs = predictor(im)
 
         print(outputs)
-        print(TEST_PATH + str(d) + ".tif")
+        # print(TEST_PATH + str(d) + ".png")
+        print(d)
 
         # ship_mentadata = MetadataCatalog.get("ship_train")
         # v = Visualizer(im[:, :, ::-1], MetadataCatalog.get(cfg.DATASETS.TRAIN[0]), scale=0.8)

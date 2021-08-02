@@ -188,5 +188,5 @@ class JSON(DATA_INFO):
     """
 
 # example
-# js = JSON('../../dataset/train')
+# js = JSON('../../dataset/split')
 # js.info_to_rotated_coco()

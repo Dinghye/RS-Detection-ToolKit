@@ -48,9 +48,8 @@ from detectron2.structures import BoxMode
 import numpy as np
 from detectron2.data import transforms as T
 
-from data.rotated_data_loader import info_Register
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "4"
+os.environ["CUDA_VISIBLE_DEVICES"] = "7"
 
 def mapper(dataset_dict):
     # Implement a mapper, similar to the default DatasetMapper, but with your own customizations

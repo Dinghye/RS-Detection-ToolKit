@@ -14,7 +14,7 @@ class coco_Register:
 
     # @todo: ugly code here
     # CLASS_NAMES = ['__background__', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']  # 保留 background 类
-    ROOT = "../dataset/trainMyDataset"
+    ROOT = "../dataset/splitMyDataset"
     CLASS_NAMES= ['__background__','0','1','2', '3', '4', '5', '6', '7', '8', '9', '10'] 
     #
     def __init__(self):

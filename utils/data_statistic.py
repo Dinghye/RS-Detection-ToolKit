@@ -3,6 +3,12 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import sys
+sys.path.append("..")
+
+# import data.json_API
+
+from data.json_API import JSON
 
 
 
@@ -18,6 +24,7 @@ Perform 6 statistics of target detection data
 4. bibliographic statistics of different categories of targets
 5. distribution of aspect ratios within a single category
 6. area distribution within a single category
+7. 旋转角度统计(info type only)
 """
 
 
@@ -175,6 +182,72 @@ def clc_length(x1, y1, x2, y2):
     return math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
 
 
+
+# here is data_info type stastic !
+# this function is 4 rotated dataset
+def get_rotated_angle(data_info):
+    # +180°~-180°，以30°为一个区间做统计
+    angle_30 = []
+    angle_60 = []
+    for i in data_info:
+        for j in i['annotations']:
+            flag_30 = 0
+            flag_60 = 0
+            if j['bbox'][-1]< -150:
+                flag_30 = 0
+                flag_60 = 0
+            elif -150 <= j['bbox'][-1] < -120 :
+                flag_30 = 1
+                flag_60 = 0
+            elif -120 <= j['bbox'][-1] < -90 :
+                flag_30 = 2
+                flag_60 = 1
+            elif -90 <= j['bbox'][-1] < -60 :
+                flag_30 = 3
+                flag_60 = 1
+            elif -60 <= j['bbox'][-1] < -30 :
+                flag_30 = 4
+                flag_60 = 2 
+            elif -30 <= j['bbox'][-1] < 0 :
+                flag_30 = 5
+                flag_60 = 2
+            elif 0 <= j['bbox'][-1] < 30 :
+                flag_30 = 6
+                flag_60 = 3
+            elif 30 <= j['bbox'][-1] < 60 :
+                flag_30 = 7
+                flag_60 = 3
+            elif 60 <= j['bbox'][-1] < 90 :
+                flag_30 = 8
+                flag_60 = 4
+            elif 90 <= j['bbox'][-1] < 120 :
+                flag_30 = 9
+                flag_60 = 4
+            elif 120 <= j['bbox'][-1] < 150 :
+                flag_30 = 10
+                flag_60 = 5
+            elif 150 <= j['bbox'][-1] < 180 :
+                flag_30 = 11
+                flag_60 = 5
+
+            angle_30.append(flag_30)
+            angle_60.append(flag_60)
+
+    # 绘制30
+    statstic = pd.value_counts(angle_30)
+    plt.bar([i for i, v in statstic.items()], [v for i, v in statstic.items()])
+    plt.ylabel("Frequency")
+    plt.savefig('angle30_frequency.png')
+    # plt.show()
+    plt.close()
+
+    # 绘制60
+    statstic = pd.value_counts(angle_60)
+    plt.bar([i for i, v in statstic.items()], [v for i, v in statstic.items()])
+    plt.ylabel("Frequency")
+    plt.savefig('angle60_frequency.png')
+    
+
 # dataset = []
 # for i in range(1, 2009):
 #     path = "labels/" + str(i) + ".txt"
@@ -187,5 +260,9 @@ DIR = '../../dataset/train'
 # dataset = json_to_txt(dataset)
 
 #
-get_single_type_lenWid_ratio(dataset)
+# get_single_type_lenWid_ratio(dataset)
+
 # get_single_type_area(dataset)
+
+js = JSON(DIR)
+get_rotated_angle(js.data_set)
