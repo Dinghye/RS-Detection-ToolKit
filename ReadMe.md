@@ -36,6 +36,9 @@ Project
     ImageMerge.py # 与ImageSplit相对，复原切割数据
     load_data_viewer.py # 对注册进去的数据进行预览（基于visualization），保证数据训练正确
     origin_data_viewer.py # 对原始数据进行预览（基于cv），依次绘制边，确定坐标点顺序的正确性
+   
+--data augmentation
+    --dehaze  #包含两种去雾算法，FFA-Net和GCANet
     
 train_net.py  # 官方代码库 copy 并自行修改
 predictor.py  # 模型预测 输出
@@ -109,3 +112,5 @@ coco转换时会出现height和width不精准的情况，提交coco_editor.py pa
 
 # 感谢&相关工作
 * https://github.com/CAPTAIN-WHU/DOTA_devkit
+* https://github.com/zhilin007/FFA-Net#ffa-net-feature-fusion-attention-network-for-single-image-dehazing-aaai-2020
+* https://github.com/cddlyf/GCANet
