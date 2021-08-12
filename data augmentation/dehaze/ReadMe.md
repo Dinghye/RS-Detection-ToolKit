@@ -6,7 +6,8 @@
 
 #### FFA-Net
 
-训练模型：百度云https://pan.baidu.com/s/1-pgSXN6-NXLzmTp21L_qIg，密码4gat，谷歌云https://drive.google.com/drive/folders/19_lSUPrpLDZl9AyewhHBsHidZEpTMIV5?usp=sharing，存放在trained_models/下，图片默认存放在test_imgs/下
+训练模型：百度云https://pan.baidu.com/s/1-pgSXN6-NXLzmTp21L_qIg，密码4gat
+谷歌云https://drive.google.com/drive/folders/19_lSUPrpLDZl9AyewhHBsHidZEpTMIV5?usp=sharing，存放在trained_models/下，图片默认存放在test_imgs/下
 
 ```
 python test.py --task ots --test_imgs home/xxx/data/images
