@@ -4,10 +4,11 @@ import numpy as np
 import math
 import cv2
 import shapely.geometry as shgeo
-import data_utils as util
+import utils.data_utils as util
 import copy
 
 import sys
+
 sys.path.append("..")
 
 # from data.json_API import get_file_info
@@ -58,10 +59,12 @@ class splitbase():
                  outpath,
                  code='utf-8',
                  gap=100,
-                 subsize=1024,
+                 subsize=600,
                  thresh=0.7,
                  choosebestpoint=True,
-                 ext='.png'
+                 ext='.png',
+                 datatype='json',  # notsupportyet
+
                  ):
         """
         :param basepath: base path for dota data
@@ -100,8 +103,9 @@ class splitbase():
         # def __del__(self):
         #     self.f_sub.close()
         ## grid --> (x, y) position of grids
+        # @todo: determined by data type! default:json
         js = data.json_API.JSON(self.basepath)
-        self.info_group = js.get_file_info(self.basepath) # get_file_info(self.basepath)  # save dataset info
+        self.info_group = js.get_file_info(self.basepath)  # get_file_info(self.basepath)  # save dataset info
 
     def polyorig2sub(self, left, up, poly):
         polyInsub = np.zeros(len(poly))
@@ -306,21 +310,25 @@ class splitbase():
         :param extent: the image format
         :return:
         """
-        img = cv2.imread(os.path.join(self.basepath, info['imagePath']))
-        if np.shape(img) == ():
-            return
-
-        objects = util.parse_dota_poly2(info)
-
-        for obj in objects:
-            obj['poly'] = list(map(lambda x: rate * x, obj['poly']))
-            # obj['poly'] = list(map(lambda x: ([2 * y for y in x]), obj['poly']))
+        try:
+            img = cv2.imread(os.path.join(self.basepath, info['imagePath']))
+            objects = util.parse_dota_poly2(info)
+            for obj in objects:
+                obj['poly'] = list(map(lambda x: rate * x, obj['poly']))
+            outbasename = info["imagePath"].split('.')[0] + '__' + str(rate) + '__'
+        except:
+            # if np.shape(img) == ():
+            img = cv2.imread(os.path.join(info))
+            # objects = []
+            print(info)
+            outbasename = info.split('/')[-1].split('.')[0] + '__' + str(rate) + '__'
 
         if (rate != 1):
             resizeimg = cv2.resize(img, None, fx=rate, fy=rate, interpolation=cv2.INTER_CUBIC)
         else:
             resizeimg = img
-        outbasename = info["imagePath"].split('.')[0] + '__' + str(rate) + '__'
+
+
         weight = np.shape(resizeimg)[1]
         height = np.shape(resizeimg)[0]
 
@@ -336,7 +344,10 @@ class splitbase():
                 down = min(up + self.subsize, height - 1)
                 subimgname = outbasename + str(left) + '___' + str(up)
                 # self.f_sub.write(name + ' ' + subimgname + ' ' + str(left) + ' ' + str(up) + '\n')
-                self.savepatches(resizeimg, objects, subimgname, left, up, right, down)
+                try:
+                    self.savepatches(resizeimg, objects, subimgname, left, up, right, down)
+                except:
+                    self.saveimagepatches(resizeimg,subimgname,left,up)
                 if (up + self.subsize >= height):
                     break
                 else:
@@ -355,17 +366,24 @@ class splitbase():
         # for i in self.info_group:
         #     imagenames.append(i["imagePath"])
         #     imagelist.append(os.path.join(self.basepath, i["imagePath"]))
-
-        for name in self.info_group:
-            self.SplitSingle(name, rate)
-
+        if len(self.info_group) != 0:
+            for name in self.info_group:
+                self.SplitSingle(name, rate)
+        else:
+            names = []
+            for root, dirs, files in os.walk(self.basepath):
+                for file in files:
+                    if os.path.splitext(file)[1] == '.png':
+                        names.append(os.path.join(root, file))
+            # print(names)
+            for name in names:
+                self.SplitSingle(name, rate)
         # imagenames = [util.custombasename(x) for x in imagelist if (util.custombasename(x) != 'Thumbs')]
         # for name in imagenames:
         #     self.SplitSingle(name, rate, self.ext)
 
-
-if __name__ == '__main__':
-    # example usage of ImgSplit
-    split = splitbase(r'../../dataset/train',
-                      r'../../dataset/split')
-    split.splitdata(1)
+# if __name__ == '__main__':
+#     # example usage of ImgSplit
+#     split = splitbase(r'../../dataset/testfull',
+#                       r'../../dataset/testsplit')
+#     split.splitdata(1)

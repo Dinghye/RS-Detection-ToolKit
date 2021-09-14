@@ -7,7 +7,7 @@
 * 设计了单独的数据格式接口
 * 提供一些针对遥感数据的预处理和统计方法
 * 提供一些斜框目标检测模型config
-* .....
+* 提供影像拆分和合并工具
 
 本项目正在建设中！欢迎一起维护～
 
@@ -37,9 +37,8 @@ Project
     load_data_viewer.py # 对注册进去的数据进行预览（基于visualization），保证数据训练正确
     origin_data_viewer.py # 对原始数据进行预览（基于cv），依次绘制边，确定坐标点顺序的正确性
    
---data augmentation
-    --dehaze  #包含两种去雾算法，FFA-Net和GCANet
-    
+   -dehaze  #包含两种去雾算法，FFA-Net和GCANet
+   -extension_polyiou # c++ extension of nms 
 train_net.py  # 官方代码库 copy 并自行修改
 predictor.py  # 模型预测 输出
 single_predictor.py # 单张图片模型输出
@@ -95,17 +94,41 @@ eval.sh
 
 
 
-# TODO List
+# Log
+2021/9/13 dinhye:
+What's new: 
 
-* 数据接口设计不完全，命名不清晰
+1. 新添加了ImageMerge功能，能够根据split文件拼出完整图用于大图预测。
 
-* 一些针对性的数据增强方法
+   @该部分参考[DOTA_devkit](https://github.com/CAPTAIN-WHU/DOTA_devkit) 值得注意的是，由于原图被拆分，造成一些目标被分割，所以在这一步当中可能出现一个目标被多次检测的情况。针对这一问题有效的策略是使用nms来提高结果的精度。ImageMerge.py 这一部分提供两种计算nms的方法：py_cpu_nms和py_cpu_nms_poly 。后者受到swig/c++的支持，需要在utils/extension_polyiou 下安装：
 
-* 一些针对遥感的模型修改与测试
+   ```shell
+   # step1: install swig
+   sudo  apt-get install swig
+   
+   # step2: create the c++ extension for python 
+   swig -c++ -python polyiou.i
+   python setup.py build_ext --inplace
+   
+   ```
 
-  
+   > 2021/9/14 nms未完全完善，暂时建议在使用的过程中nms=False. Detectorn2 封装好的nms！
 
-# LOG
+2. 修改完善ImageSplit，现支持纯图片拆分（以方便在预测的过程中使用）
+
+3. 修改完善predictor，按照指定格式保存结果，预测流程为：拆分图片->预测->结果合并（暂时disable预览，可通过修改utils/origin_data_viewer和预测结果来显示。
+
+4. 移动dataprocess（dehaze）到data
+
+Future work：
+
+* evaluator没有修改好，需要根据predictor的流程来修改evaluator的process
+* time comsuming的问题：由于在预测过程中需要拆解图片和合并图片，使得预测时间大大延长。可以考虑用c++的一些extension来帮助实现这部分功能（或者multi-process）
+
+
+
+
+
 2021/8/2 dinghye: 
 coco转换时会出现height和width不精准的情况，提交coco_editor.py patch 修改矫正；添加cascade模型(model/cascade)；添加旋转框角度统计(data_statistic.py)；
 重要修改: eval-only 旋转框验证完善（RotatedCOCOEvalutate）
