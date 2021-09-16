@@ -12,8 +12,9 @@ import json
 nms_thresh = 0.3
 pic_type = '.png'
 
+
 class mergebase():
-    def __init__(self, js_res, outpath ='', nms=True):
+    def __init__(self, js_res, outpath='', nms=True):
         self.namebox = {}
         self.piclist = []
         self.final_out = []
@@ -30,7 +31,6 @@ class mergebase():
 
             pattern2 = re.compile(r'__([\d+\.]+)__\d+___')
             rate = re.findall(pattern2, subname)[0]
-
 
             # dets = []
             for object in img['labels']:
@@ -58,7 +58,6 @@ class mergebase():
 
         self.piclist = np.array(self.piclist)
 
-
         for img in (np.unique(self.piclist)):
             out = {}
             out['image_name'] = img + pic_type
@@ -66,15 +65,14 @@ class mergebase():
             for det in self.namebox[img]:
                 obj = {}
                 obj['category_id'] = det[-1]
-                obj['points'] = np.array(det[0:len(det)-2]).reshape(4,2).tolist()
-                obj['confidence'] = det[len(det)-2]
+                obj['points'] = np.array(det[0:len(det) - 2]).reshape(4, 2).tolist()
+                obj['confidence'] = det[len(det) - 2]
                 out['labels'].append(obj)
             self.final_out.append(out)
 
         if outpath != '':
-            with open (outpath,'w') as f:
-                json.dump(self.final_out,f,indent=2)
-
+            with open(outpath, 'w') as f:
+                json.dump(self.final_out, f, indent=2)
 
     def poly2originpoly(self, poly, x, y, rate):
         origpoly = []
@@ -103,18 +101,16 @@ class mergebase():
             nameboxnmsdict[imgname] = outdets
         return nameboxnmsdict
 
-
-
     # beta version : @todo: time consuming !
     def py_cpu_nms(self, dets, thresh):
         """Pure Python NMS baseline."""
         # print('dets:', dets)
 
-        x1 = list(map(float, dets[:, 0]))
-        y1 = list(map(float, dets[:, 1]))
-        x2 = list(map(float, dets[:, 2]))
-        y2 = list(map(float, dets[:, 3]))
-        scores = list(map(float, dets[:, 4]))
+        x1 = dets[:, 0].astype(float)
+        y1 = dets[:, 1].astype(float)
+        x2 = dets[:, 2].astype(float)
+        y2 = dets[:, 3].astype(float)
+        scores = dets[:, 4].astype(float)
 
         areas = (x2 - x1 + 1) * (y2 - y1 + 1)
         ## index for dets
@@ -139,32 +135,32 @@ class mergebase():
 
         return keep
 
+    # disable!
     # beta version: to get single image object nms outcome!
-    def py_cpu_nms_poly(self, dets, thresh):
-        import utils.extension_polyiou.polyiou as polyiou
-
-        scores = dets[:, 8]
-        polys = []
-        # category_id = []
-        for i in range(len(dets)):
-            tm_polygon = polyiou.VectorDouble([dets[i][0], dets[i][1],
-                                               dets[i][2], dets[i][3],
-                                               dets[i][4], dets[i][5],
-                                               dets[i][6], dets[i][7]])
-            polys.append(tm_polygon)
-
-        order = scores.argsort()[::-1]  # reverse! I hate python :(
-
-        keep = []
-        while order.size > 0:
-            ovr = []
-            i = order[0]
-            keep.append(i)
-            for j in range(order.size - 1):
-                iou = polyiou.iou_poly(polys[i], polys[order[j + 1]])
-                ovr.append(iou)
-            ovr = np.array(ovr)
-            inds = np.where(ovr <= thresh)[0]
-            order = order[inds + 1]
-        return keep
-
+    # def py_cpu_nms_poly(self, dets, thresh):
+    #     import utils.extension_polyiou.polyiou as polyiou
+    #
+    #     scores = dets[:, 8]
+    #     polys = []
+    #     # category_id = []
+    #     for i in range(len(dets)):
+    #         tm_polygon = polyiou.VectorDouble([dets[i][0], dets[i][1],
+    #                                            dets[i][2], dets[i][3],
+    #                                            dets[i][4], dets[i][5],
+    #                                            dets[i][6], dets[i][7]])
+    #         polys.append(tm_polygon)
+    #
+    #     order = scores.argsort()[::-1]  # reverse! I hate python :(
+    #
+    #     keep = []
+    #     while order.size > 0:
+    #         ovr = []
+    #         i = order[0]
+    #         keep.append(i)
+    #         for j in range(order.size - 1):
+    #             iou = polyiou.iou_poly(polys[i], polys[order[j + 1]])
+    #             ovr.append(iou)
+    #         ovr = np.array(ovr)
+    #         inds = np.where(ovr <= thresh)[0]
+    #         order = order[inds + 1]
+    #     return keep

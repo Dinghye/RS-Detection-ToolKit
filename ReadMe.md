@@ -38,7 +38,7 @@ Project
     origin_data_viewer.py # 对原始数据进行预览（基于cv），依次绘制边，确定坐标点顺序的正确性
    
    -dehaze  #包含两种去雾算法，FFA-Net和GCANet
-   -extension_polyiou # c++ extension of nms 
+   # -extension_polyiou # c++ extension of nms 
 train_net.py  # 官方代码库 copy 并自行修改
 predictor.py  # 模型预测 输出
 single_predictor.py # 单张图片模型输出
@@ -95,6 +95,27 @@ eval.sh
 
 
 # Log
+2021/9/16 dinghye:
+What's new:
+
+1. 实现合并图像时的非极大值抑制（nms=True）python version
+
+   值得注意的是这里的nms_thresh可以改小一点，disable py_cpu_nms_poly
+
+2. 完善load_data_viewer,rotated_visualizatiion
+
+   （比较重要）之前版本的viewer只能显示目标的位置，其类别显示和颜色都是错误的。针对该问题，我们进行了修改完善。
+
+Future work：
+
+1. 常参数定义的过于混乱，比如说CLS_Name这种，与任务相关的参数贯穿始终，这样的东西应该统一管理！
+2. 关于evaluator：由于现在的evaluator的test数据还是针对的小图，其实好像拼图与否影响是比较小的ho……所以打算先这样吧
+3. 关于坐标转换：建议使用Detectron2 的转换！
+
+
+
+
+
 2021/9/13 dinhye:
 What's new: 
 
@@ -112,6 +133,8 @@ What's new:
    
    ```
 
+   > 2021/9/16 nms实现
+   >
    > 2021/9/14 nms未完全完善，暂时建议在使用的过程中nms=False. Detectorn2 封装好的nms！
 
 2. 修改完善ImageSplit，现支持纯图片拆分（以方便在预测的过程中使用）

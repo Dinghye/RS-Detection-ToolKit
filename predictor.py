@@ -53,8 +53,6 @@ def rotateTo4Point(params):
     return rotated_rect
 
 
-
-
 if __name__ == "__main__":
     setup_logger()
 
@@ -78,7 +76,7 @@ if __name__ == "__main__":
         if not len(out_js.get('labels')) == 0:
             result.append(out_js)
 
-    mr.mergebase(result, OUT_PATH + 'result.json', nms=False)  # nms not support yet
+    mr.mergebase(result, OUT_PATH + 'result.json', nms=True)
 
     # for d in random.sample(os.listdir(TEST_PATH), 20):
     #     # im = cv2.imread(TEST_PATH + str(d) + ".png")

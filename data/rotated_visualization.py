@@ -1,7 +1,11 @@
 from detectron2.structures import BoxMode
 from detectron2.utils.visualizer import Visualizer, _create_text_labels, GenericMask, ColorMode
 import numpy as np
+import matplotlib as plt
 import cv2
+
+
+# CLASS_NAMES= ['__background__','0','1','2', '3', '4', '5', '6', '7', '8', '9', '10']
 
 
 class myVisualization(Visualizer):
@@ -30,7 +34,10 @@ class myVisualization(Visualizer):
                 "{}".format(i) + ("|crowd" if a.get("iscrowd", 0) else "")
                 for i, a in zip(labels, annos)
             ]
-            self.overlay_instances(labels=labels, boxes=boxes, masks=masks, keypoints=keypts)
+            assigned_colors = [self.metadata.get("thing_colors", None)[x["category_id"]]for x in annos]
+
+            self.overlay_instances(labels=labels, boxes=boxes, masks=masks, keypoints=keypts,
+                                   assigned_colors=assigned_colors)
 
         sem_seg = dic.get("sem_seg", None)
         if sem_seg is None and "sem_seg_file_name" in dic:
@@ -63,7 +70,7 @@ class myVisualization(Visualizer):
 
         if self._instance_mode == ColorMode.SEGMENTATION and self.metadata.get("thing_colors"):
             colors = [
-                self._jitter([x / 255 for x in self.metadata.thing_colors[c]]) for c in classes
+                self._jitter([x / 255 for x in self.metadata.thing_colors[c]]) for c in labels
             ]
             alpha = 0.8
         else:
