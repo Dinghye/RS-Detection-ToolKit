@@ -1,6 +1,0 @@
-{
-    "python.pythonPath": "/home/amax/anaconda3/envs/dinghye/bin/python",
-    "python.analysis.extraPaths": [
-        "./data"
-    ]
-}
