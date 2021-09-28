@@ -45,13 +45,6 @@ Data structure example:
 """
 
 
-# @todo: NOT hard code
-CLS_NUM = {
-    # "A": 1, "B": 2, "C": 3, "D": 4, "E": 5, "F": 6, "G": 7, "H": 8, "I": 9, "J": 10, "K": 11
-    "A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5, "G": 6, "H": 7, "I": 8, "J": 9, "K": 10
-}
-
-
 class JSON(DATA_INFO):
 
     def __init__(self, data_path):
@@ -182,11 +175,12 @@ class JSON(DATA_INFO):
             dataset.append(single_img)
 
         return dataset
+
     """
     directly change data to coco form
     @TODO: independent class/function
     """
 
 # example
-# js = JSON('../../dataset/split')
+# js = JSON('../../dataset/trainsplit')
 # js.info_to_rotated_coco()

@@ -1,14 +1,8 @@
-import math
-from collections import Counter
-
 import cv2
-import numpy as np
 from detectron2.data import DatasetCatalog, MetadataCatalog
-from detectron2.structures import BoxMode
 from sklearn.model_selection import train_test_split
-from detectron2.utils.visualizer import Visualizer, _create_text_labels, GenericMask, ColorMode
 
-from data.rotated_visualization import myVisualization
+from utils.rotated_visualization import myVisualization
 
 """
 data={

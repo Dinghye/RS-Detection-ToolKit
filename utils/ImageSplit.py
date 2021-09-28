@@ -6,7 +6,8 @@ import cv2
 import shapely.geometry as shgeo
 import utils.data_utils as util
 import copy
-
+from multiprocessing import Pool
+from functools import partial
 import sys
 
 sys.path.append("..")
@@ -53,16 +54,22 @@ def cal_line_length(point1, point2):
     return math.sqrt(math.pow(point1[0] - point2[0], 2) + math.pow(point1[1] - point2[1], 2))
 
 
+def split_single_warp(info, split_base, rate):
+    split_base.SplitSingle(info, rate)
+
+
 class splitbase():
     def __init__(self,
                  basepath,
                  outpath,
                  code='utf-8',
-                 gap=100,
-                 subsize=600,
+                 gap=256,
+                 subsize=512,
                  thresh=0.7,
                  choosebestpoint=True,
+                 padding = True,
                  ext='.png',
+                 num_process=8,
                  datatype='json',  # notsupportyet
 
                  ):
@@ -84,7 +91,7 @@ class splitbase():
         self.subsize = subsize
         self.slide = self.subsize - self.gap
         self.thresh = thresh
-
+        self.padding = padding
         self.info_group = []
         # self.imagepath = os.path.join(self.basepath, 'images')
         # self.labelpath = os.path.join(self.basepath, 'labelTxt')
@@ -94,6 +101,9 @@ class splitbase():
         self.outlabelpath = self.outpath
         self.choosebestpoint = choosebestpoint
         self.ext = ext
+        self.num_process = num_process
+        self.pool = Pool(num_process)
+
         if not os.path.exists(self.outimagepath):
             os.makedirs(self.outimagepath)
         if not os.path.exists(self.outlabelpath):
@@ -222,8 +232,6 @@ class splitbase():
                 # f_out.write(outline + '\n')
 
             elif (half_iou > 0):
-                # elif (half_iou > self.thresh):
-                ##  print('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
                 inter_poly = shgeo.polygon.orient(inter_poly, sign=1)
                 out_poly = list(inter_poly.exterior.coords)[0: -1]
                 if len(out_poly) < 4:
@@ -235,7 +243,6 @@ class splitbase():
                     out_poly2.append(out_poly[i][1])
 
                 if (len(out_poly) == 5):
-                    # print('==========================')
                     out_poly2 = self.GetPoly4FromPoly5(out_poly2)
                 elif (len(out_poly) > 5):
                     """
@@ -271,7 +278,7 @@ class splitbase():
                     ## if the left part is too small, label as '2'
                     # outline = outline + ' ' + obj['name'] + ' ' + '2'
                     single_o = {}
-                    single_o["lable"] = obj['name']
+                    single_o["label"] = obj['name']
                     points = [[polyInsub[0], polyInsub[1]],
                               [polyInsub[2], polyInsub[3]],
                               [polyInsub[4], polyInsub[5]],
@@ -328,7 +335,6 @@ class splitbase():
         else:
             resizeimg = img
 
-
         weight = np.shape(resizeimg)[1]
         height = np.shape(resizeimg)[0]
 
@@ -347,7 +353,7 @@ class splitbase():
                 try:
                     self.savepatches(resizeimg, objects, subimgname, left, up, right, down)
                 except:
-                    self.saveimagepatches(resizeimg,subimgname,left,up)
+                    self.saveimagepatches(resizeimg, subimgname, left, up)
                 if (up + self.subsize >= height):
                     break
                 else:
@@ -366,24 +372,47 @@ class splitbase():
         # for i in self.info_group:
         #     imagenames.append(i["imagePath"])
         #     imagelist.append(os.path.join(self.basepath, i["imagePath"]))
-        if len(self.info_group) != 0:
-            for name in self.info_group:
-                self.SplitSingle(name, rate)
+
+        if self.num_process == 1:
+            if len(self.info_group) != 0:
+                for name in self.info_group:
+                    self.SplitSingle(name, rate)
+            else:
+                names = []
+                for root, dirs, files in os.walk(self.basepath):
+                    for file in files:
+                        if os.path.splitext(file)[1] == '.png':
+                            names.append(os.path.join(root, file))
+                # print(names)
+                for name in names:
+                    self.SplitSingle(name, rate)
         else:
-            names = []
-            for root, dirs, files in os.walk(self.basepath):
-                for file in files:
-                    if os.path.splitext(file)[1] == '.png':
-                        names.append(os.path.join(root, file))
-            # print(names)
-            for name in names:
-                self.SplitSingle(name, rate)
+            if len(self.info_group) != 0:
+                worker = partial(split_single_warp, split_base=self, rate=rate)
+                self.pool.map(worker, self.info_group)
+            else:
+                names = []
+                for root, dirs, files in os.walk(self.basepath):
+                    for file in files:
+                        if os.path.splitext(file)[1] == '.png':
+                            names.append(os.path.join(root, file))
+
+                worker = partial(split_single_warp, split_base=self, rate=rate)
+                self.pool.map(worker, names)
+
         # imagenames = [util.custombasename(x) for x in imagelist if (util.custombasename(x) != 'Thumbs')]
         # for name in imagenames:
         #     self.SplitSingle(name, rate, self.ext)
+    def __getstate__(self):
+        self_dict = self.__dict__.copy()
+        del self_dict['pool']
+        return self_dict
 
-# if __name__ == '__main__':
-#     # example usage of ImgSplit
-#     split = splitbase(r'../../dataset/testfull',
-#                       r'../../dataset/testsplit')
-#     split.splitdata(1)
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+
+if __name__ == '__main__':
+    # example usage of ImgSplit
+    split = splitbase(r'../../dataset/testfull',
+                      r'../../dataset/testsplit')
+    split.splitdata(1)

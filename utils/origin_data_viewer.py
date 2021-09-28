@@ -17,8 +17,8 @@ Mainly used to check data.
 # img_path = '/home/dinghye/下载/科目四初赛第一阶段/train/'  # 把图片直接放在同一文件夹下
 # from data.json_API import get_file_info
 
-img_path = '../../dataset/testfull'
 
+img_path = '../../dataset/testfull'
 
 def read_labels(path, name):
     """

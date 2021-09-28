@@ -1,5 +1,8 @@
 /output
 /output_cascade_rcnn_split
-/.vscode
+.vscode
+__pycache__/
+
+
 
 nohup.out

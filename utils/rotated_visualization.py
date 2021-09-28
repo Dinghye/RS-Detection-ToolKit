@@ -1,7 +1,7 @@
 from detectron2.structures import BoxMode
 from detectron2.utils.visualizer import Visualizer, _create_text_labels, GenericMask, ColorMode
 import numpy as np
-import matplotlib as plt
+
 import cv2
 
 
@@ -70,7 +70,9 @@ class myVisualization(Visualizer):
 
         if self._instance_mode == ColorMode.SEGMENTATION and self.metadata.get("thing_colors"):
             colors = [
-                self._jitter([x / 255 for x in self.metadata.thing_colors[c]]) for c in labels
+                # self._jitter([x / 255 for x in self.metadata.thing_colors[c]]) for c in labels
+                self._jitter([x for x in self.metadata.thing_colors[c]]) for c in labels
+
             ]
             alpha = 0.8
         else:

@@ -1,16 +1,14 @@
-import random
 import cv2
 from detectron2.utils.logger import setup_logger
 from detectron2.engine import DefaultPredictor
 from detectron2.config import get_cfg
-from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
 import os
-from data.rotated_visualization import myVisualization
 import utils.ImageSplit as sp
 import utils.ImageMerge as mr
 import math
 
+# @todo : fix ugly code
 TEST_PATH = "../dataset/trainMyDataset/images/val"
 OUT_PATH = " ../dataset/trainMyDataset/image/outcome"
 CLASS_LIST = ['__background__', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']

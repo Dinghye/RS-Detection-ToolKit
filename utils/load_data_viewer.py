@@ -1,13 +1,8 @@
-import random
-
-from detectron2.data import DatasetCatalog, MetadataCatalog
 import cv2
-from sklearn.model_selection import train_test_split
 # import data.txt_data_loader as ld
 from data.json_API import JSON
 from data.rotated_data_loader import info_Register
-from data.rotated_visualization import myVisualization
-import matplotlib as plt
+from utils.rotated_visualization import myVisualization
 
 """
 Use the data display that comes with detectron2 to view annotation data
@@ -18,11 +13,12 @@ Mainly used to check if the data is correctly registered。
 
 json_data = JSON('../../dataset/testfull')
 
+
+# todo :fix ugly code
 CLASS_CHAR_LIST = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
 CLS_NUM = {
     "A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5, "G": 6, "H": 7, "I": 8, "J": 9, "K": 10
 }
-
 COLOR = ['aliceblue', 'azure', 'coral', 'firebrick', 'green', 'greenyellow', 'honeydew', 'lightcoral', 'lightpink',
          'purple', 'red', 'violet']
 for d in info_Register(json_data, 0.2).data_info.data_set:

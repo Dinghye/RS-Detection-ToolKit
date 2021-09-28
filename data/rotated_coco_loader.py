@@ -1,12 +1,10 @@
 import os
-
 import cv2
 from detectron2.data import DatasetCatalog, MetadataCatalog
 from detectron2.data.datasets.coco import load_coco_json
-
-# NOT FINISHED YET!!!!!
-# TEST ONLY
 from detectron2.utils.visualizer import Visualizer
+
+
 # CLS_N= ['__background__','0','1','2', '3', '4', '5', '6', '7', '8', '9', '10']
 
 class coco_Register:
@@ -14,8 +12,9 @@ class coco_Register:
 
     # @todo: ugly code here
     # CLASS_NAMES = ['__background__', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']  # 保留 background 类
-    ROOT = "../dataset/splitMyDataset"
-    CLASS_NAMES= ['__background__','0','1','2', '3', '4', '5', '6', '7', '8', '9', '10'] 
+    ROOT = "../dataset/trainsplitMyDataset"  # "splitMyDataset"
+    CLASS_NAMES = ['__background__', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+
     #
     def __init__(self):
         self.CLASS_NAMES = coco_Register.CLASS_NAMES or ['__background__', ]
@@ -58,14 +57,14 @@ class coco_Register:
         MetadataCatalog.get(name).set(json_file=json_file,
                                       image_root=image_root,
                                       evaluator_type="RotatedCOCOEvaluator")
-                                      # evaluator_type="coco") # 这里注意！如果是rotated coco要选择对应的evaluator_type!
+        # evaluator_type="coco") # 这里注意！如果是rotated coco要选择对应的evaluator_type!
 
     def plain_register_dataset(self):
         """注册数据集和元数据"""
         # 训练集
         DatasetCatalog.register("train", lambda: load_coco_json(self.TRAIN_JSON, self.TRAIN_PATH))
         MetadataCatalog.get("train").set(thing_classes=self.CLASS_NAMES,  # 可以选择开启，但是不能显示中文，这里需要注意，中文的话最好关闭
-                                         #evaluator_type='coco',  # 指定评估方式
+                                         # evaluator_type='coco',  # 指定评估方式
                                          evaluator_type='RotatedCOCOEvaluator',
                                          json_file=self.TRAIN_JSON,
                                          image_root=self.TRAIN_PATH)
@@ -73,11 +72,11 @@ class coco_Register:
         # 验证/测试集
         DatasetCatalog.register("val", lambda: load_coco_json(self.VAL_JSON, self.VAL_PATH))
         MetadataCatalog.get("val").set(thing_classes=self.CLASS_NAMES,  # 可以选择开启，但是不能显示中文，这里需要注意，中文的话最好关闭
-                                    #    evaluator_type='coco',  # 指定评估方式
-                                        evaluator_type='RotatedCOCOEvaluator',
+                                       #    evaluator_type='coco',  # 指定评估方式
+                                       evaluator_type='RotatedCOCOEvaluator',
 
-                                        json_file=self.VAL_JSON,
-                                        image_root=self.VAL_PATH)
+                                       json_file=self.VAL_JSON,
+                                       image_root=self.VAL_PATH)
         # print(self.CLASS_NAMES)
 
     def checkout_dataset_annotation(self, name="coco_my_val"):

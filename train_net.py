@@ -47,15 +47,16 @@ from data.rotated_coco_loader import coco_Register
 from detectron2.structures import BoxMode
 import numpy as np
 from detectron2.data import transforms as T
+from detectron2_backbone import backbone
+from detectron2_backbone.config import add_backbone_config
 
-
-os.environ["CUDA_VISIBLE_DEVICES"] = "7"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 def mapper(dataset_dict):
     # Implement a mapper, similar to the default DatasetMapper, but with your own customizations
     dataset_dict = copy.deepcopy(dataset_dict)  # it will be modified by code below
     image = utils.read_image(dataset_dict["file_name"], format="BGR")
-    image, transforms = T.apply_transform_gens([T.Resize((800, 800))], image)
+    image, transforms = T.apply_transform_gens([T.Resize((600, 600))], image)
     dataset_dict["image"] = torch.as_tensor(image.transpose(2, 0, 1).astype("float32"))
 
     annos = [
@@ -193,6 +194,9 @@ def setup(args):
     Create configs and perform basic setups.
     """
     cfg = get_cfg()
+
+    # add config to detectron2
+    add_backbone_config(cfg)
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
     cfg.freeze()

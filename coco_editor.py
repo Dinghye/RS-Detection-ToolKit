@@ -25,15 +25,15 @@ def save_file(path, item):
         except Exception as e:
             print("write error==>", e)
 
-json_file = '../dataset/splitMyDataset/annotations/val.json'
+json_file = '../dataset/trainsplitMyDataset/annotations/val.json'
 with open(json_file) as i:
     info = json.load(i)
 
 for i in range(0,len(info['images'])):
-    info['images'][i]['height'] = 1024
-    info['images'][i]['width'] = 1024
+    info['images'][i]['height'] = 600
+    info['images'][i]['width'] = 600
 
-save_file('../dataset/splitMyDataset/annotations/val_edit.json',info)
+save_file('../dataset/trainsplitMyDataset/annotations/val_edit.json',info)
 
 
 

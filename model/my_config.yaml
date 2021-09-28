@@ -1,11 +1,21 @@
 # _BASE_: "faster_rcnn_R_50_FPN_3x.yaml"
 _BASE_: "cascade_rcnn_R_50_FPN_1x.yaml"
+INPUT:
+  RANDOM_FLIP: "horizontal"
+
 DATASETS:
   TRAIN: ("train",)
   TEST: ("val",)
 MODEL:
-  RETINANET:
-    NUM_CLASSES: 12  # 类别数+1, 因为有background
+  BACKBONE:
+    NAME: "build_fcos_efficientnet_fpn_backbone"
+#  RETINANET:
+#    NUM_CLASSES: 12  # 类别数+1, 因为有background
+  EFFICIENTNET:
+    NAME: "efficientnet_b3"
+    OUT_FEATURES: ["stride4", "stride8", "stride16", "stride32"]
+  FPN:
+    IN_FEATURES: [ "stride4", "stride8", "stride16", "stride32" ]
   # WEIGHTS: "../tools/output/model_final.pth"
   # rotational boxes
   RPN:
@@ -16,7 +26,7 @@ MODEL:
     ANGLES: [ [ -120,-60,0,30,90,150 ] ]
   ROI_HEADS:
     NAME: "RROIHeads"
-    BATCH_SIZE_PER_IMAGE: 256   # faster, and good enough for this toy dataset (default: 512)
+    BATCH_SIZE_PER_IMAGE: 512   # faster, and good enough for this toy dataset (default: 512)
     NUM_CLASSES: 12               # attention plz!!!!!!!!!
     SCORE_THRESH_TEST: 0.5  # set threshold for this model
   PROPOSAL_GENERATOR:
