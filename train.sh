@@ -3,7 +3,7 @@
 python3 train_net.py \
   --config-file model/my_config.yaml \
   --num-gpus 1 \
-  SOLVER.IMS_PER_BATCH 24 \
+  SOLVER.IMS_PER_BATCH 4 \
   SOLVER.BASE_LR 0.00025 \
-  SOLVER.MAX_ITER 12000 \
-  SOLVER.STEPS '(2400, 2900)'
+  SOLVER.MAX_ITER 100000 \
+#  SOLVER.STEPS '(2400, 2900)'
